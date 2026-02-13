@@ -2,7 +2,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { Logo } from '@/components/Logo';
-import { Search, Heart, User, Menu, LogOut, Package, Plus, Sparkles } from 'lucide-react';
+import { Search, Heart, User, Menu, LogOut, Package, Plus, Sparkles, Shield } from 'lucide-react';
+import { useAdmin } from '@/hooks/useAdmin';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +16,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 export function Header() {
   const { user, profile, signOut } = useAuth();
+  const { isAdmin } = useAdmin();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -81,6 +83,11 @@ export function Header() {
                       </p>
                     </div>
                     <DropdownMenuSeparator />
+                    {isAdmin && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/admin" className="cursor-pointer"><Shield className="mr-2 h-4 w-4" />Admin Panel</Link>
+                      </DropdownMenuItem>
+                    )}
                     {profile?.role === 'vendor' && (
                       <DropdownMenuItem asChild>
                         <Link to="/dashboard" className="cursor-pointer"><Package className="mr-2 h-4 w-4" />My Listings</Link>
@@ -122,6 +129,9 @@ export function Header() {
                       <p className="font-medium">{profile?.full_name || profile?.email}</p>
                       <p className="text-sm text-muted-foreground capitalize">{profile?.role}</p>
                     </div>
+                    {isAdmin && (
+                      <Link to="/admin" className="flex items-center gap-3 text-sm hover:text-primary"><Shield className="h-4 w-4" />Admin Panel</Link>
+                    )}
                     {profile?.role === 'vendor' && (
                       <>
                         <Link to="/dashboard/add-product" className="flex items-center gap-3 text-sm hover:text-primary"><Plus className="h-4 w-4" />Add Product</Link>

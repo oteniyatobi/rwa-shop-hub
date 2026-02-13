@@ -45,12 +45,16 @@ export type Database = {
       }
       products: {
         Row: {
+          block_reason: string | null
+          blocked_at: string | null
+          blocked_by: string | null
           category: Database["public"]["Enums"]["product_category"]
           created_at: string
           description: string | null
           id: string
           images: string[] | null
           is_active: boolean
+          is_blocked: boolean
           location: string
           price: number
           title: string
@@ -58,12 +62,16 @@ export type Database = {
           vendor_id: string
         }
         Insert: {
+          block_reason?: string | null
+          blocked_at?: string | null
+          blocked_by?: string | null
           category?: Database["public"]["Enums"]["product_category"]
           created_at?: string
           description?: string | null
           id?: string
           images?: string[] | null
           is_active?: boolean
+          is_blocked?: boolean
           location: string
           price: number
           title: string
@@ -71,12 +79,16 @@ export type Database = {
           vendor_id: string
         }
         Update: {
+          block_reason?: string | null
+          blocked_at?: string | null
+          blocked_by?: string | null
           category?: Database["public"]["Enums"]["product_category"]
           created_at?: string
           description?: string | null
           id?: string
           images?: string[] | null
           is_active?: boolean
+          is_blocked?: boolean
           location?: string
           price?: number
           title?: string
@@ -108,9 +120,13 @@ export type Database = {
           email: string
           full_name: string | null
           id: string
+          is_suspended: boolean
           location: string | null
           phone: string | null
           role: Database["public"]["Enums"]["user_role"]
+          suspended_at: string | null
+          suspended_by: string | null
+          suspension_reason: string | null
           updated_at: string
           user_id: string
           whatsapp: string | null
@@ -122,9 +138,13 @@ export type Database = {
           email: string
           full_name?: string | null
           id?: string
+          is_suspended?: boolean
           location?: string | null
           phone?: string | null
           role?: Database["public"]["Enums"]["user_role"]
+          suspended_at?: string | null
+          suspended_by?: string | null
+          suspension_reason?: string | null
           updated_at?: string
           user_id: string
           whatsapp?: string | null
@@ -136,12 +156,115 @@ export type Database = {
           email?: string
           full_name?: string | null
           id?: string
+          is_suspended?: boolean
           location?: string | null
           phone?: string | null
           role?: Database["public"]["Enums"]["user_role"]
+          suspended_at?: string | null
+          suspended_by?: string | null
+          suspension_reason?: string | null
           updated_at?: string
           user_id?: string
           whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      reports: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          description: string | null
+          id: string
+          reason: string
+          reported_product_id: string | null
+          reported_user_id: string | null
+          reporter_id: string
+          resolved_by: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          reason: string
+          reported_product_id?: string | null
+          reported_user_id?: string | null
+          reporter_id: string
+          resolved_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          reason?: string
+          reported_product_id?: string | null
+          reported_user_id?: string | null
+          reporter_id?: string
+          resolved_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      verification_requests: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          document_type: string
+          document_url: string | null
+          id: string
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          document_type: string
+          document_url?: string | null
+          id?: string
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          document_type?: string
+          document_url?: string | null
+          id?: string
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -179,9 +302,16 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
+      app_role: "admin" | "moderator" | "user"
       product_category:
         | "electronics"
         | "fashion"
@@ -323,6 +453,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["admin", "moderator", "user"],
       product_category: [
         "electronics",
         "fashion",
