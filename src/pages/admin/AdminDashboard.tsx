@@ -10,6 +10,7 @@ import { ContentModeration } from '@/components/admin/ContentModeration';
 import { UserManagement } from '@/components/admin/UserManagement';
 import { ReportsPanel } from '@/components/admin/ReportsPanel';
 import { VerificationPanel } from '@/components/admin/VerificationPanel';
+import { motion } from 'framer-motion';
 
 export default function AdminDashboard() {
   const { user, loading: authLoading } = useAuth();
@@ -17,67 +18,56 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!authLoading && !user) {
-      navigate('/login');
-    }
-    if (!authLoading && !adminLoading && !isAdmin) {
-      navigate('/');
-    }
+    if (!authLoading && !user) navigate('/login');
+    if (!authLoading && !adminLoading && !isAdmin) navigate('/');
   }, [user, authLoading, isAdmin, adminLoading, navigate]);
 
   if (authLoading || adminLoading) {
-    return (
-      <Layout>
-        <div className="flex min-h-[50vh] items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        </div>
-      </Layout>
-    );
+    return <Layout><div className="flex min-h-[50vh] items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div></Layout>;
   }
 
   if (!isAdmin) return null;
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-6">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Shield className="h-6 w-6 text-primary" />
-            Admin Panel
-          </h1>
-          <p className="text-sm text-muted-foreground">Manage content, users, and platform safety</p>
-        </div>
+      <div className="container mx-auto px-4 py-8">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                <Shield className="h-5 w-5 text-primary" />
+              </div>
+              Admin Panel
+            </h1>
+            <p className="text-muted-foreground mt-1.5 ml-[52px]">Manage content, users, and platform safety</p>
+          </div>
 
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 bg-secondary">
-            <TabsTrigger value="overview" className="flex items-center gap-1.5 text-xs sm:text-sm">
-              <LayoutDashboard className="h-4 w-4" />
-              <span className="hidden sm:inline">Overview</span>
-            </TabsTrigger>
-            <TabsTrigger value="moderation" className="flex items-center gap-1.5 text-xs sm:text-sm">
-              <FileWarning className="h-4 w-4" />
-              <span className="hidden sm:inline">Content</span>
-            </TabsTrigger>
-            <TabsTrigger value="users" className="flex items-center gap-1.5 text-xs sm:text-sm">
-              <Users className="h-4 w-4" />
-              <span className="hidden sm:inline">Users</span>
-            </TabsTrigger>
-            <TabsTrigger value="reports" className="flex items-center gap-1.5 text-xs sm:text-sm">
-              <FileWarning className="h-4 w-4" />
-              <span className="hidden sm:inline">Reports</span>
-            </TabsTrigger>
-            <TabsTrigger value="verification" className="flex items-center gap-1.5 text-xs sm:text-sm">
-              <CheckCircle className="h-4 w-4" />
-              <span className="hidden sm:inline">Verify</span>
-            </TabsTrigger>
-          </TabsList>
+          <Tabs defaultValue="overview" className="space-y-6">
+            <TabsList className="glass-card rounded-xl p-1 h-auto flex-wrap">
+              <TabsTrigger value="overview" className="rounded-lg flex items-center gap-1.5 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <LayoutDashboard className="h-4 w-4" /><span className="hidden sm:inline">Overview</span>
+              </TabsTrigger>
+              <TabsTrigger value="moderation" className="rounded-lg flex items-center gap-1.5 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <FileWarning className="h-4 w-4" /><span className="hidden sm:inline">Content</span>
+              </TabsTrigger>
+              <TabsTrigger value="users" className="rounded-lg flex items-center gap-1.5 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Users className="h-4 w-4" /><span className="hidden sm:inline">Users</span>
+              </TabsTrigger>
+              <TabsTrigger value="reports" className="rounded-lg flex items-center gap-1.5 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <FileWarning className="h-4 w-4" /><span className="hidden sm:inline">Reports</span>
+              </TabsTrigger>
+              <TabsTrigger value="verification" className="rounded-lg flex items-center gap-1.5 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <CheckCircle className="h-4 w-4" /><span className="hidden sm:inline">Verify</span>
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="overview"><AdminStats /></TabsContent>
-          <TabsContent value="moderation"><ContentModeration /></TabsContent>
-          <TabsContent value="users"><UserManagement /></TabsContent>
-          <TabsContent value="reports"><ReportsPanel /></TabsContent>
-          <TabsContent value="verification"><VerificationPanel /></TabsContent>
-        </Tabs>
+            <TabsContent value="overview"><AdminStats /></TabsContent>
+            <TabsContent value="moderation"><ContentModeration /></TabsContent>
+            <TabsContent value="users"><UserManagement /></TabsContent>
+            <TabsContent value="reports"><ReportsPanel /></TabsContent>
+            <TabsContent value="verification"><VerificationPanel /></TabsContent>
+          </Tabs>
+        </motion.div>
       </div>
     </Layout>
   );
