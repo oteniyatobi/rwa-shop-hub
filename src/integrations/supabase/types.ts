@@ -235,6 +235,48 @@ export type Database = {
         }
         Relationships: []
       }
+      vendor_subscriptions: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          expires_at: string | null
+          id: string
+          payment_method: string | null
+          payment_reference: string | null
+          started_at: string | null
+          status: string
+          updated_at: string
+          vendor_user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          expires_at?: string | null
+          id?: string
+          payment_method?: string | null
+          payment_reference?: string | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+          vendor_user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          expires_at?: string | null
+          id?: string
+          payment_method?: string | null
+          payment_reference?: string | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+          vendor_user_id?: string
+        }
+        Relationships: []
+      }
       verification_requests: {
         Row: {
           admin_notes: string | null
@@ -308,6 +350,7 @@ export type Database = {
       }
     }
     Functions: {
+      has_active_subscription: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -315,6 +358,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_subscription_required: { Args: never; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
