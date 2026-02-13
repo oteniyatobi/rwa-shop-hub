@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { PRODUCT_CATEGORIES, RWANDA_LOCATIONS } from '@/lib/constants';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Filter, X, ChevronDown } from 'lucide-react';
+import { Filter, X, Search, SlidersHorizontal } from 'lucide-react';
+import { motion } from 'framer-motion';
 import {
   Select,
   SelectContent,
@@ -21,6 +22,16 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number = 0) => ({
+    opacity: 1, y: 0,
+    transition: { delay: i * 0.05, duration: 0.4, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+  }),
+};
+
+const stagger = { visible: { transition: { staggerChildren: 0.04 } } };
 
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -41,100 +52,64 @@ export default function Products() {
   const { data: products, isLoading } = useQuery({
     queryKey: ['products', { search, category, location, sortBy }],
     queryFn: async () => {
-      let query = supabase
-        .from('products')
-        .select('*')
-        .eq('is_active', true);
-
-      if (search) {
-        query = query.ilike('title', `%${search}%`);
-      }
-      if (category) {
-        query = query.eq('category', category as any);
-      }
-      if (location) {
-        query = query.ilike('location', `%${location}%`);
-      }
-
+      let query = supabase.from('products').select('*').eq('is_active', true);
+      if (search) query = query.ilike('title', `%${search}%`);
+      if (category) query = query.eq('category', category as any);
+      if (location) query = query.ilike('location', `%${location}%`);
       switch (sortBy) {
-        case 'price_low':
-          query = query.order('price', { ascending: true });
-          break;
-        case 'price_high':
-          query = query.order('price', { ascending: false });
-          break;
-        default:
-          query = query.order('created_at', { ascending: false });
+        case 'price_low': query = query.order('price', { ascending: true }); break;
+        case 'price_high': query = query.order('price', { ascending: false }); break;
+        default: query = query.order('created_at', { ascending: false });
       }
-
       const { data, error } = await query.limit(50);
       if (error) throw error;
       return data;
     },
   });
 
-  const clearFilters = () => {
-    setCategory('');
-    setLocation('');
-    setSortBy('newest');
-  };
-
+  const clearFilters = () => { setCategory(''); setLocation(''); setSortBy('newest'); };
   const hasFilters = category || location || sortBy !== 'newest';
 
   const FilterContent = () => (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div>
-        <label className="text-sm font-medium mb-2 block">Category</label>
+        <label className="text-sm font-semibold mb-2 block text-foreground">Category</label>
         <Select value={category} onValueChange={setCategory}>
-          <SelectTrigger>
-            <SelectValue placeholder="All Categories" />
-          </SelectTrigger>
-          <SelectContent>
+          <SelectTrigger className="rounded-xl"><SelectValue placeholder="All Categories" /></SelectTrigger>
+          <SelectContent className="rounded-xl">
             <SelectItem value="">All Categories</SelectItem>
             {PRODUCT_CATEGORIES.map((cat) => (
-              <SelectItem key={cat.value} value={cat.value}>
-                {cat.icon} {cat.label}
-              </SelectItem>
+              <SelectItem key={cat.value} value={cat.value}>{cat.icon} {cat.label}</SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
-
       <div>
-        <label className="text-sm font-medium mb-2 block">Location</label>
+        <label className="text-sm font-semibold mb-2 block text-foreground">Location</label>
         <Select value={location} onValueChange={setLocation}>
-          <SelectTrigger>
-            <SelectValue placeholder="All Locations" />
-          </SelectTrigger>
-          <SelectContent>
+          <SelectTrigger className="rounded-xl"><SelectValue placeholder="All Locations" /></SelectTrigger>
+          <SelectContent className="rounded-xl">
             <SelectItem value="">All Locations</SelectItem>
             {RWANDA_LOCATIONS.map((loc) => (
-              <SelectItem key={loc} value={loc}>
-                {loc}
-              </SelectItem>
+              <SelectItem key={loc} value={loc}>{loc}</SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
-
       <div>
-        <label className="text-sm font-medium mb-2 block">Sort By</label>
+        <label className="text-sm font-semibold mb-2 block text-foreground">Sort By</label>
         <Select value={sortBy} onValueChange={setSortBy}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
+          <SelectTrigger className="rounded-xl"><SelectValue /></SelectTrigger>
+          <SelectContent className="rounded-xl">
             <SelectItem value="newest">Newest First</SelectItem>
             <SelectItem value="price_low">Price: Low to High</SelectItem>
             <SelectItem value="price_high">Price: High to Low</SelectItem>
           </SelectContent>
         </Select>
       </div>
-
       {hasFilters && (
-        <Button variant="outline" onClick={clearFilters} className="w-full">
-          <X className="mr-2 h-4 w-4" />
-          Clear Filters
+        <Button variant="outline" onClick={clearFilters} className="w-full rounded-xl">
+          <X className="mr-2 h-4 w-4" /> Clear Filters
         </Button>
       )}
     </div>
@@ -142,44 +117,52 @@ export default function Products() {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold">
-              {search ? `Results for "${search}"` : category ? PRODUCT_CATEGORIES.find(c => c.value === category)?.label : 'All Products'}
+        <motion.div initial="hidden" animate="visible" variants={stagger} className="flex items-center justify-between mb-8">
+          <motion.div variants={fadeUp}>
+            <h1 className="text-3xl font-bold tracking-tight">
+              {search ? (
+                <>Results for <span className="gradient-text">"{search}"</span></>
+              ) : category ? (
+                PRODUCT_CATEGORIES.find(c => c.value === category)?.label
+              ) : (
+                'All Products'
+              )}
             </h1>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-sm text-muted-foreground mt-1.5">
               {products?.length || 0} products found
             </p>
-          </div>
+          </motion.div>
 
-          {/* Mobile Filter Button */}
           <Sheet>
             <SheetTrigger asChild className="md:hidden">
-              <Button variant="outline" size="sm">
-                <Filter className="mr-2 h-4 w-4" />
-                Filters
+              <Button variant="outline" size="sm" className="rounded-xl gap-2">
+                <SlidersHorizontal className="h-4 w-4" /> Filters
+                {hasFilters && <span className="h-2 w-2 rounded-full bg-primary" />}
               </Button>
             </SheetTrigger>
-            <SheetContent side="right">
-              <SheetHeader>
-                <SheetTitle>Filters</SheetTitle>
-              </SheetHeader>
-              <div className="mt-6">
-                <FilterContent />
-              </div>
+            <SheetContent side="right" className="border-l border-border/50">
+              <SheetHeader><SheetTitle>Filters</SheetTitle></SheetHeader>
+              <div className="mt-6"><FilterContent /></div>
             </SheetContent>
           </Sheet>
-        </div>
+        </motion.div>
 
-        <div className="flex gap-6">
-          {/* Desktop Sidebar Filters */}
+        <div className="flex gap-8">
+          {/* Desktop Sidebar */}
           <aside className="hidden w-64 shrink-0 md:block">
-            <div className="sticky top-24 rounded-lg border bg-card p-4">
-              <h3 className="font-semibold mb-4">Filters</h3>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4 }}
+              className="sticky top-24 glass-card rounded-2xl p-5"
+            >
+              <h3 className="font-bold mb-5 flex items-center gap-2">
+                <SlidersHorizontal className="h-4 w-4 text-primary" /> Filters
+              </h3>
               <FilterContent />
-            </div>
+            </motion.div>
           </aside>
 
           {/* Products Grid */}
@@ -187,28 +170,41 @@ export default function Products() {
             {isLoading ? (
               <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
                 {[...Array(9)].map((_, i) => (
-                  <div key={i} className="animate-pulse">
-                    <div className="aspect-square rounded-lg bg-muted"></div>
-                    <div className="mt-2 h-4 rounded bg-muted"></div>
-                    <div className="mt-1 h-3 w-2/3 rounded bg-muted"></div>
+                  <div key={i} className="animate-shimmer rounded-2xl">
+                    <div className="aspect-square rounded-2xl bg-muted" />
+                    <div className="mt-3 h-4 rounded-lg bg-muted w-3/4" />
+                    <div className="mt-2 h-3 rounded-lg bg-muted w-1/2" />
                   </div>
                 ))}
               </div>
             ) : products && products.length > 0 ? (
-              <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
-                {products.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+              <motion.div
+                initial="hidden"
+                animate="visible"
+                variants={stagger}
+                className="grid grid-cols-2 gap-4 lg:grid-cols-3"
+              >
+                {products.map((product, i) => (
+                  <motion.div key={product.id} variants={fadeUp} custom={i}>
+                    <ProductCard product={product} />
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             ) : (
-              <div className="py-16 text-center">
-                <p className="text-muted-foreground">No products found matching your criteria.</p>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="py-20 text-center"
+              >
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-muted">
+                  <Search className="h-7 w-7 text-muted-foreground" />
+                </div>
+                <h3 className="mt-5 font-bold text-lg">No products found</h3>
+                <p className="mt-1.5 text-muted-foreground text-sm">Try adjusting your filters or search terms.</p>
                 {hasFilters && (
-                  <Button variant="outline" onClick={clearFilters} className="mt-4">
-                    Clear Filters
-                  </Button>
+                  <Button variant="outline" onClick={clearFilters} className="mt-5 rounded-xl">Clear Filters</Button>
                 )}
-              </div>
+              </motion.div>
             )}
           </div>
         </div>
