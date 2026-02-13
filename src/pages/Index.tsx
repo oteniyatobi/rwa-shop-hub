@@ -3,11 +3,25 @@ import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { ProductCard } from '@/components/products/ProductCard';
 import { CategoryCard } from '@/components/products/CategoryCard';
-import { PRODUCT_CATEGORIES, RWANDA_LOCATIONS } from '@/lib/constants';
-import { Search, ArrowRight, Shield, Users, Truck } from 'lucide-react';
+import { PRODUCT_CATEGORIES } from '@/lib/constants';
+import { Search, ArrowRight, Shield, Users, Truck, Sparkles, TrendingUp } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useState } from 'react';
+import { motion } from 'framer-motion';
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: (i: number = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+  }),
+};
+
+const stagger = {
+  visible: { transition: { staggerChildren: 0.06 } },
+};
 
 export default function Index() {
   const navigate = useNavigate();
@@ -22,7 +36,6 @@ export default function Index() {
         .eq('is_active', true)
         .order('created_at', { ascending: false })
         .limit(8);
-      
       if (error) throw error;
       return data;
     },
@@ -38,165 +51,252 @@ export default function Index() {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary/10 via-background to-secondary/10 py-16 md:py-24">
+      <section className="relative overflow-hidden section-padding">
+        {/* Background decorations */}
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full bg-primary/5 blur-3xl" />
+          <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full bg-accent/5 blur-3xl" />
+        </div>
+
         <div className="container mx-auto px-4">
-          <div className="mx-auto max-w-3xl text-center">
-            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
-              Buy & Sell in <span className="text-primary">Rwanda</span>
-            </h1>
-            <p className="mt-4 text-lg text-muted-foreground md:text-xl">
-              Find great deals on electronics, fashion, vehicles, and more. Connect directly with local sellers.
-            </p>
-            
+          <motion.div
+            className="mx-auto max-w-3xl text-center"
+            initial="hidden"
+            animate="visible"
+            variants={stagger}
+          >
+            <motion.div variants={fadeUp} custom={0}>
+              <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-xs font-semibold text-primary mb-6">
+                <Sparkles className="h-3.5 w-3.5" />
+                Rwanda's #1 Marketplace
+              </span>
+            </motion.div>
+
+            <motion.h1
+              variants={fadeUp}
+              custom={1}
+              className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl text-balance"
+            >
+              Buy & Sell in{' '}
+              <span className="gradient-text">Rwanda</span>
+            </motion.h1>
+
+            <motion.p
+              variants={fadeUp}
+              custom={2}
+              className="mt-5 text-lg text-muted-foreground md:text-xl max-w-2xl mx-auto text-balance"
+            >
+              Find great deals on electronics, fashion, vehicles, and more. 
+              Connect directly with trusted local sellers.
+            </motion.p>
+
             {/* Search Bar */}
-            <form onSubmit={handleSearch} className="mt-8">
+            <motion.form variants={fadeUp} custom={3} onSubmit={handleSearch} className="mt-10">
               <div className="relative mx-auto max-w-xl">
-                <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                <Search className="absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                 <input
                   type="text"
                   placeholder="What are you looking for?"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-14 w-full rounded-full border-2 bg-background pl-12 pr-32 text-base outline-none transition-colors focus:border-primary"
+                  className="h-14 w-full rounded-2xl border border-border bg-card pl-13 pr-36 text-base shadow-lg shadow-primary/5 outline-none transition-all focus:border-primary focus:ring-4 focus:ring-primary/10 placeholder:text-muted-foreground/60"
+                  style={{ paddingLeft: '3.25rem' }}
                 />
                 <Button
                   type="submit"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full px-6"
+                  size="lg"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl px-6 h-10 glow-primary"
                 >
                   Search
                 </Button>
               </div>
-            </form>
+            </motion.form>
 
             {/* Quick Links */}
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+            <motion.div variants={fadeUp} custom={4} className="mt-6 flex flex-wrap items-center justify-center gap-2">
               <span className="text-sm text-muted-foreground">Popular:</span>
               {['iPhone', 'Toyota', 'Laptop', 'House'].map((term) => (
                 <Link
                   key={term}
                   to={`/products?search=${term}`}
-                  className="rounded-full border bg-background px-3 py-1 text-sm transition-colors hover:border-primary"
+                  className="rounded-full border border-border/80 bg-card px-4 py-1.5 text-sm font-medium transition-all hover:border-primary/50 hover:bg-primary/5 hover:text-primary"
                 >
                   {term}
                 </Link>
               ))}
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
       {/* Categories Section */}
-      <section className="py-12 md:py-16">
+      <section className="section-padding bg-muted/30">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">Browse Categories</h2>
-            <Button asChild variant="ghost">
-              <Link to="/products">
-                View All <ArrowRight className="ml-1 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-          <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-6">
-            {PRODUCT_CATEGORIES.slice(0, 12).map((category) => (
-              <CategoryCard
-                key={category.value}
-                value={category.value}
-                label={category.label}
-                icon={category.icon}
-              />
-            ))}
-          </div>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={stagger}
+          >
+            <motion.div variants={fadeUp} className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-2xl font-bold md:text-3xl">Browse Categories</h2>
+                <p className="text-muted-foreground mt-1 text-sm">Find exactly what you need</p>
+              </div>
+              <Button asChild variant="ghost" className="group">
+                <Link to="/products">
+                  View All <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </Button>
+            </motion.div>
+            <motion.div variants={stagger} className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
+              {PRODUCT_CATEGORIES.slice(0, 12).map((category, i) => (
+                <motion.div key={category.value} variants={fadeUp} custom={i}>
+                  <CategoryCard
+                    value={category.value}
+                    label={category.label}
+                    icon={category.icon}
+                  />
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
       {/* Recent Products Section */}
-      <section className="bg-muted/50 py-12 md:py-16">
+      <section className="section-padding">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">Recently Added</h2>
-            <Button asChild variant="ghost">
-              <Link to="/products">
-                See All <ArrowRight className="ml-1 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-          
-          {isLoading ? (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="aspect-square rounded-lg bg-muted"></div>
-                  <div className="mt-2 h-4 rounded bg-muted"></div>
-                  <div className="mt-1 h-3 w-2/3 rounded bg-muted"></div>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={stagger}
+          >
+            <motion.div variants={fadeUp} className="flex items-center justify-between mb-8">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                  <h2 className="text-2xl font-bold md:text-3xl">Recently Added</h2>
                 </div>
-              ))}
-            </div>
-          ) : recentProducts && recentProducts.length > 0 ? (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-              {recentProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          ) : (
-            <div className="py-12 text-center">
-              <p className="text-muted-foreground">No products yet. Be the first to sell!</p>
-              <Button asChild className="mt-4">
-                <Link to="/register?role=vendor">Start Selling</Link>
+                <p className="text-muted-foreground text-sm">Fresh listings from our community</p>
+              </div>
+              <Button asChild variant="ghost" className="group">
+                <Link to="/products">
+                  See All <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Link>
               </Button>
-            </div>
-          )}
+            </motion.div>
+
+            {isLoading ? (
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+                {[...Array(8)].map((_, i) => (
+                  <div key={i} className="animate-shimmer rounded-xl">
+                    <div className="aspect-square rounded-xl bg-muted" />
+                    <div className="mt-3 h-4 rounded-lg bg-muted w-2/3" />
+                    <div className="mt-2 h-3 rounded-lg bg-muted w-1/2" />
+                  </div>
+                ))}
+              </div>
+            ) : recentProducts && recentProducts.length > 0 ? (
+              <motion.div variants={stagger} className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+                {recentProducts.map((product, i) => (
+                  <motion.div key={product.id} variants={fadeUp} custom={i}>
+                    <ProductCard product={product} />
+                  </motion.div>
+                ))}
+              </motion.div>
+            ) : (
+              <div className="py-16 text-center">
+                <p className="text-muted-foreground">No products yet. Be the first to sell!</p>
+                <Button asChild className="mt-4 glow-primary">
+                  <Link to="/register?role=vendor">Start Selling</Link>
+                </Button>
+              </div>
+            )}
+          </motion.div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-12 md:py-16">
+      <section className="section-padding bg-muted/30">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl font-bold text-center mb-10">Why Choose Doorstep?</h2>
-          <div className="grid gap-8 md:grid-cols-3">
-            <div className="text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-                <Shield className="h-7 w-7 text-primary" />
-              </div>
-              <h3 className="mt-4 font-semibold text-lg">Safe & Secure</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Verified sellers and safe buying tips to protect your transactions.
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={stagger}
+          >
+            <motion.div variants={fadeUp} className="text-center mb-14">
+              <h2 className="text-2xl font-bold md:text-3xl">Why Choose Doorstep?</h2>
+              <p className="mt-2 text-muted-foreground max-w-lg mx-auto">
+                A safer, easier, and more connected way to buy and sell locally.
               </p>
+            </motion.div>
+            <div className="grid gap-6 md:grid-cols-3 max-w-4xl mx-auto">
+              {[
+                {
+                  icon: Shield,
+                  title: 'Safe & Secure',
+                  desc: 'Verified sellers and safe buying tips to protect your transactions.',
+                  color: 'primary',
+                },
+                {
+                  icon: Users,
+                  title: 'Local Community',
+                  desc: 'Connect with buyers and sellers in your area across Rwanda.',
+                  color: 'accent',
+                },
+                {
+                  icon: Truck,
+                  title: 'Easy Delivery',
+                  desc: 'Sellers arrange delivery with local bike riders for your convenience.',
+                  color: 'primary',
+                },
+              ].map((feature, i) => (
+                <motion.div
+                  key={feature.title}
+                  variants={fadeUp}
+                  custom={i}
+                  className="group relative rounded-2xl border border-border/50 bg-card p-8 text-center transition-all hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5"
+                >
+                  <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                    <feature.icon className="h-6 w-6" />
+                  </div>
+                  <h3 className="font-bold text-lg">{feature.title}</h3>
+                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{feature.desc}</p>
+                </motion.div>
+              ))}
             </div>
-            <div className="text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-secondary/20">
-                <Users className="h-7 w-7 text-secondary-foreground" />
-              </div>
-              <h3 className="mt-4 font-semibold text-lg">Local Community</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Connect with buyers and sellers in your area across Rwanda.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent/20">
-                <Truck className="h-7 w-7 text-accent-foreground" />
-              </div>
-              <h3 className="mt-4 font-semibold text-lg">Easy Delivery</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Sellers arrange delivery with local bike riders for your convenience.
-              </p>
-            </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="bg-primary py-12 md:py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-2xl font-bold text-primary-foreground md:text-3xl">
-            Ready to Start Selling?
-          </h2>
-          <p className="mt-3 text-primary-foreground/80">
-            Join thousands of vendors on Doorstep and reach customers across Rwanda.
-          </p>
-          <Button asChild size="lg" variant="secondary" className="mt-6">
-            <Link to="/register?role=vendor">Become a Vendor</Link>
-          </Button>
+      <section className="section-padding relative overflow-hidden">
+        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary to-primary/80" />
+        <div className="absolute inset-0 -z-10 opacity-20">
+          <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-accent/30 blur-3xl" />
         </div>
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={stagger}
+          className="container mx-auto px-4 text-center"
+        >
+          <motion.h2 variants={fadeUp} className="text-3xl font-bold text-primary-foreground md:text-4xl text-balance">
+            Ready to Start Selling?
+          </motion.h2>
+          <motion.p variants={fadeUp} custom={1} className="mt-4 text-primary-foreground/80 text-lg max-w-lg mx-auto">
+            Join thousands of vendors on Doorstep and reach customers across Rwanda.
+          </motion.p>
+          <motion.div variants={fadeUp} custom={2}>
+            <Button asChild size="lg" variant="secondary" className="mt-8 rounded-xl px-8 text-base font-semibold shadow-lg">
+              <Link to="/register?role=vendor">Become a Vendor</Link>
+            </Button>
+          </motion.div>
+        </motion.div>
       </section>
     </Layout>
   );
