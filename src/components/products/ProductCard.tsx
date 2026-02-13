@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Heart, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useState } from 'react';
@@ -41,36 +40,27 @@ export function ProductCard({ product, isFavorite = false, onFavoriteToggle }: P
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    
     if (diffDays === 0) return 'Today';
     if (diffDays === 1) return 'Yesterday';
-    if (diffDays < 7) return `${diffDays} days ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
     return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
   };
 
   const handleFavorite = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
     if (!user) {
       toast.error('Please sign in to save favorites');
       return;
     }
-
     setLoading(true);
     try {
       if (favorited) {
-        await supabase
-          .from('favorites')
-          .delete()
-          .eq('user_id', user.id)
-          .eq('product_id', product.id);
+        await supabase.from('favorites').delete().eq('user_id', user.id).eq('product_id', product.id);
         setFavorited(false);
         toast.success('Removed from favorites');
       } else {
-        await supabase
-          .from('favorites')
-          .insert({ user_id: user.id, product_id: product.id });
+        await supabase.from('favorites').insert({ user_id: user.id, product_id: product.id });
         setFavorited(true);
         toast.success('Added to favorites');
       }
@@ -86,19 +76,20 @@ export function ProductCard({ product, isFavorite = false, onFavoriteToggle }: P
 
   return (
     <Link to={`/products/${product.id}`}>
-      <Card className="group overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1">
+      <div className="group overflow-hidden rounded-2xl border border-border/50 bg-card transition-all duration-300 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1">
         <div className="relative aspect-square overflow-hidden bg-muted">
           <img
             src={imageUrl}
             alt={product.title}
-            className="h-full w-full object-cover transition-transform group-hover:scale-105"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
             loading="lazy"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           <Button
             variant="ghost"
             size="icon"
-            className={`absolute right-2 top-2 h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm transition-colors ${
-              favorited ? 'text-destructive' : 'text-muted-foreground hover:text-destructive'
+            className={`absolute right-2.5 top-2.5 h-9 w-9 rounded-xl bg-background/70 backdrop-blur-md border border-border/30 transition-all ${
+              favorited ? 'text-destructive bg-destructive/10' : 'text-muted-foreground hover:text-destructive'
             }`}
             onClick={handleFavorite}
             disabled={loading}
@@ -106,18 +97,18 @@ export function ProductCard({ product, isFavorite = false, onFavoriteToggle }: P
             <Heart className={`h-4 w-4 ${favorited ? 'fill-current' : ''}`} />
           </Button>
         </div>
-        <CardContent className="p-3">
+        <div className="p-3.5">
           <p className="font-bold text-lg text-primary">{formatPrice(product.price)}</p>
-          <h3 className="mt-1 line-clamp-2 text-sm font-medium leading-tight">{product.title}</h3>
-          <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
+          <h3 className="mt-1 line-clamp-2 text-sm font-medium leading-snug text-foreground/90">{product.title}</h3>
+          <div className="mt-2.5 flex items-center justify-between text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
               <MapPin className="h-3 w-3" />
               {product.location}
             </span>
-            <span>{formatDate(product.created_at)}</span>
+            <span className="text-muted-foreground/70">{formatDate(product.created_at)}</span>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </Link>
   );
 }

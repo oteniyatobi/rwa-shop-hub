@@ -13,12 +13,12 @@ export function CategoryCard({ value, label, icon }: CategoryCardProps) {
   return (
     <Link
       to={`/products?category=${value}`}
-      className="group flex flex-col items-center gap-3 rounded-xl border border-border/50 bg-card p-5 text-center transition-all hover:border-primary hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1"
+      className="group flex flex-col items-center gap-3 rounded-2xl border border-border/40 bg-card p-5 text-center transition-all duration-300 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1"
     >
-      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-        {LucideIcon && <LucideIcon className="h-6 w-6" />}
+      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground group-hover:scale-110 group-hover:rounded-2xl">
+        {LucideIcon && <LucideIcon className="h-5 w-5" />}
       </div>
-      <span className="text-sm font-medium">{label}</span>
+      <span className="text-xs font-semibold sm:text-sm">{label}</span>
     </Link>
   );
 }
