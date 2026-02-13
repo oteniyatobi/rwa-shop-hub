@@ -5,17 +5,27 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Phone, MessageCircle, MapPin, Calendar, ChevronLeft, ChevronRight, User, Heart, Share2 } from 'lucide-react';
+import { Phone, MessageCircle, MapPin, Calendar, ChevronLeft, ChevronRight, User, Heart, Share2, Flag } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { PRODUCT_CATEGORIES } from '@/lib/constants';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger,
+} from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 
 export default function ProductDetails() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [favorited, setFavorited] = useState(false);
+  const [reportReason, setReportReason] = useState('');
+  const [reportDescription, setReportDescription] = useState('');
+  const [reportOpen, setReportOpen] = useState(false);
 
   const { data: product, isLoading } = useQuery({
     queryKey: ['product', id],
@@ -116,6 +126,26 @@ export default function ProductDetails() {
       toast.success('Link copied to clipboard');
     }
   };
+
+  const reportMutation = useMutation({
+    mutationFn: async () => {
+      if (!user || !id) throw new Error('Not authenticated');
+      const { error } = await supabase.from('reports').insert({
+        reporter_id: user.id,
+        reported_product_id: id,
+        reason: reportReason,
+        description: reportDescription || null,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success('Report submitted. Our team will review it.');
+      setReportOpen(false);
+      setReportReason('');
+      setReportDescription('');
+    },
+    onError: () => toast.error('Failed to submit report. Please try again.'),
+  });
 
   if (isLoading) {
     return (
@@ -317,6 +347,69 @@ export default function ProductDetails() {
                     <li>• Trust your instincts</li>
                   </ul>
                 </div>
+
+                {/* Report Button */}
+                <Dialog open={reportOpen} onOpenChange={setReportOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="mt-4 w-full text-muted-foreground hover:text-destructive"
+                      onClick={() => {
+                        if (!user) {
+                          toast.error('Please sign in to report a listing');
+                          return;
+                        }
+                        setReportOpen(true);
+                      }}
+                    >
+                      <Flag className="mr-2 h-4 w-4" />
+                      Report this listing
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Report Listing</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Reason</Label>
+                        <Select value={reportReason} onValueChange={setReportReason}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a reason" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Fraudulent listing">Fraudulent listing</SelectItem>
+                            <SelectItem value="Illegal item">Illegal item</SelectItem>
+                            <SelectItem value="Spam">Spam</SelectItem>
+                            <SelectItem value="Misleading info">Misleading information</SelectItem>
+                            <SelectItem value="Duplicate listing">Duplicate listing</SelectItem>
+                            <SelectItem value="Other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Details (optional)</Label>
+                        <Textarea
+                          placeholder="Provide more details about the issue..."
+                          value={reportDescription}
+                          onChange={(e) => setReportDescription(e.target.value)}
+                          maxLength={1000}
+                          rows={3}
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button
+                        variant="destructive"
+                        onClick={() => reportMutation.mutate()}
+                        disabled={!reportReason || reportMutation.isPending}
+                      >
+                        {reportMutation.isPending ? 'Submitting...' : 'Submit Report'}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </CardContent>
             </Card>
           </div>
