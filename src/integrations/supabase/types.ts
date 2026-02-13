@@ -121,6 +121,7 @@ export type Database = {
           full_name: string | null
           id: string
           is_suspended: boolean
+          is_verified: boolean
           location: string | null
           phone: string | null
           role: Database["public"]["Enums"]["user_role"]
@@ -139,6 +140,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           is_suspended?: boolean
+          is_verified?: boolean
           location?: string | null
           phone?: string | null
           role?: Database["public"]["Enums"]["user_role"]
@@ -157,6 +159,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           is_suspended?: boolean
+          is_verified?: boolean
           location?: string | null
           phone?: string | null
           role?: Database["public"]["Enums"]["user_role"]
@@ -277,6 +280,7 @@ export type Database = {
           created_at: string | null
           full_name: string | null
           id: string | null
+          is_verified: boolean | null
           location: string | null
           role: Database["public"]["Enums"]["user_role"] | null
         }
@@ -286,6 +290,7 @@ export type Database = {
           created_at?: string | null
           full_name?: string | null
           id?: string | null
+          is_verified?: boolean | null
           location?: string | null
           role?: Database["public"]["Enums"]["user_role"] | null
         }
@@ -295,6 +300,7 @@ export type Database = {
           created_at?: string | null
           full_name?: string | null
           id?: string | null
+          is_verified?: boolean | null
           location?: string | null
           role?: Database["public"]["Enums"]["user_role"] | null
         }
