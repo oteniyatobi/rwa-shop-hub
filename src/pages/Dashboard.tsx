@@ -6,9 +6,10 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Edit, Trash2, Eye, EyeOff, Package, Loader2, TrendingUp, BarChart3 } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, EyeOff, Package, Loader2, TrendingUp, BarChart3, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import { useSubscription } from '@/hooks/useSubscription';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
@@ -24,6 +25,7 @@ export default function Dashboard() {
   const { user, profile, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { needsSubscription, isRequired } = useSubscription();
 
   useEffect(() => {
     if (!authLoading && !user) navigate('/login');
@@ -91,6 +93,26 @@ export default function Dashboard() {
               <Link to="/dashboard/add-product"><Plus className="mr-2 h-4 w-4" /> Add Product</Link>
             </Button>
           </motion.div>
+
+          {/* Subscription Banner */}
+          {needsSubscription && (
+            <motion.div variants={fadeUp}>
+              <Card className="rounded-2xl border-destructive/30 bg-destructive/5 mb-6">
+                <CardContent className="p-4 flex items-center gap-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-destructive/10">
+                    <AlertTriangle className="h-5 w-5 text-destructive" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-sm">Subscription Required</p>
+                    <p className="text-xs text-muted-foreground">Your products are hidden from buyers. Subscribe for 1,999 RWF/month to make them visible.</p>
+                  </div>
+                  <Button asChild size="sm" className="rounded-xl shrink-0">
+                    <Link to="/subscription">Subscribe Now</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
 
           {/* Stats */}
           <motion.div variants={fadeUp} className="grid grid-cols-3 gap-4 mb-8">

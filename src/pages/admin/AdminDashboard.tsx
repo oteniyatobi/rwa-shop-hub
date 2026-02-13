@@ -4,12 +4,13 @@ import { Layout } from '@/components/layout/Layout';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdmin } from '@/hooks/useAdmin';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Shield, FileWarning, Users, CheckCircle, Loader2, LayoutDashboard } from 'lucide-react';
+import { Shield, FileWarning, Users, CheckCircle, Loader2, LayoutDashboard, CreditCard } from 'lucide-react';
 import { AdminStats } from '@/components/admin/AdminStats';
 import { ContentModeration } from '@/components/admin/ContentModeration';
 import { UserManagement } from '@/components/admin/UserManagement';
 import { ReportsPanel } from '@/components/admin/ReportsPanel';
 import { VerificationPanel } from '@/components/admin/VerificationPanel';
+import { SubscriptionManagement } from '@/components/admin/SubscriptionManagement';
 import { motion } from 'framer-motion';
 
 export default function AdminDashboard() {
@@ -59,6 +60,9 @@ export default function AdminDashboard() {
               <TabsTrigger value="verification" className="rounded-lg flex items-center gap-1.5 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <CheckCircle className="h-4 w-4" /><span className="hidden sm:inline">Verify</span>
               </TabsTrigger>
+              <TabsTrigger value="subscriptions" className="rounded-lg flex items-center gap-1.5 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <CreditCard className="h-4 w-4" /><span className="hidden sm:inline">Subs</span>
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview"><AdminStats /></TabsContent>
@@ -66,6 +70,7 @@ export default function AdminDashboard() {
             <TabsContent value="users"><UserManagement /></TabsContent>
             <TabsContent value="reports"><ReportsPanel /></TabsContent>
             <TabsContent value="verification"><VerificationPanel /></TabsContent>
+            <TabsContent value="subscriptions"><SubscriptionManagement /></TabsContent>
           </Tabs>
         </motion.div>
       </div>

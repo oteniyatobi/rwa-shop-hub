@@ -14,6 +14,7 @@ import Dashboard from "./pages/Dashboard";
 import AddProduct from "./pages/AddProduct";
 import Profile from "./pages/Profile";
 import Favorites from "./pages/Favorites";
+import Subscription from "./pages/Subscription";
 import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -41,6 +42,7 @@ const App = () => (
               <Route path="/dashboard/add-product" element={<AddProduct />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/favorites" element={<Favorites />} />
+              <Route path="/subscription" element={<Subscription />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
