@@ -4,7 +4,8 @@ import { Layout } from '@/components/layout/Layout';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdmin } from '@/hooks/useAdmin';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Shield, FileWarning, Users, CheckCircle, Loader2 } from 'lucide-react';
+import { Shield, FileWarning, Users, CheckCircle, Loader2, LayoutDashboard } from 'lucide-react';
+import { AdminStats } from '@/components/admin/AdminStats';
 import { ContentModeration } from '@/components/admin/ContentModeration';
 import { UserManagement } from '@/components/admin/UserManagement';
 import { ReportsPanel } from '@/components/admin/ReportsPanel';
@@ -47,8 +48,12 @@ export default function AdminDashboard() {
           <p className="text-sm text-muted-foreground">Manage content, users, and platform safety</p>
         </div>
 
-        <Tabs defaultValue="moderation" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-secondary">
+        <Tabs defaultValue="overview" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-5 bg-secondary">
+            <TabsTrigger value="overview" className="flex items-center gap-1.5 text-xs sm:text-sm">
+              <LayoutDashboard className="h-4 w-4" />
+              <span className="hidden sm:inline">Overview</span>
+            </TabsTrigger>
             <TabsTrigger value="moderation" className="flex items-center gap-1.5 text-xs sm:text-sm">
               <FileWarning className="h-4 w-4" />
               <span className="hidden sm:inline">Content</span>
@@ -67,6 +72,7 @@ export default function AdminDashboard() {
             </TabsTrigger>
           </TabsList>
 
+          <TabsContent value="overview"><AdminStats /></TabsContent>
           <TabsContent value="moderation"><ContentModeration /></TabsContent>
           <TabsContent value="users"><UserManagement /></TabsContent>
           <TabsContent value="reports"><ReportsPanel /></TabsContent>
