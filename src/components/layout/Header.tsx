@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { Logo } from '@/components/Logo';
 import { Search, Heart, User, Menu, LogOut, Package, Plus, Sparkles, Shield } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { useAdmin } from '@/hooks/useAdmin';
 import {
   DropdownMenu,
@@ -52,6 +53,7 @@ export function Header() {
           </form>
 
           <nav className="hidden items-center gap-2 md:flex">
+            <ThemeToggle />
             {user ? (
               <>
                 {profile?.role === 'vendor' && (
@@ -117,6 +119,10 @@ export function Header() {
             </SheetTrigger>
             <SheetContent side="right" className="w-80 glass border-l border-border/50">
               <div className="flex flex-col gap-6 pt-8">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Theme</span>
+                  <ThemeToggle />
+                </div>
                 <form onSubmit={handleSearch}>
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
