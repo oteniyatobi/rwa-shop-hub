@@ -74,10 +74,10 @@ export default function Products() {
     <div className="space-y-5">
       <div>
         <label className="text-sm font-semibold mb-2 block text-foreground">Category</label>
-        <Select value={category} onValueChange={setCategory}>
+        <Select value={category || 'all'} onValueChange={(v) => setCategory(v === 'all' ? '' : v)}>
           <SelectTrigger className="rounded-xl"><SelectValue placeholder="All Categories" /></SelectTrigger>
           <SelectContent className="rounded-xl">
-            <SelectItem value="">All Categories</SelectItem>
+            <SelectItem value="all">All Categories</SelectItem>
             {PRODUCT_CATEGORIES.map((cat) => (
               <SelectItem key={cat.value} value={cat.value}>{cat.icon} {cat.label}</SelectItem>
             ))}
@@ -86,10 +86,10 @@ export default function Products() {
       </div>
       <div>
         <label className="text-sm font-semibold mb-2 block text-foreground">Location</label>
-        <Select value={location} onValueChange={setLocation}>
+        <Select value={location || 'all'} onValueChange={(v) => setLocation(v === 'all' ? '' : v)}>
           <SelectTrigger className="rounded-xl"><SelectValue placeholder="All Locations" /></SelectTrigger>
           <SelectContent className="rounded-xl">
-            <SelectItem value="">All Locations</SelectItem>
+            <SelectItem value="all">All Locations</SelectItem>
             {RWANDA_LOCATIONS.map((loc) => (
               <SelectItem key={loc} value={loc}>{loc}</SelectItem>
             ))}
