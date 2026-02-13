@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Phone, MessageCircle, MapPin, Calendar, ChevronLeft, ChevronRight, User, Heart, Share2, Flag } from 'lucide-react';
+import { Phone, MessageCircle, MapPin, Calendar, ChevronLeft, ChevronRight, User, Heart, Share2, Flag, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useMutation } from '@tanstack/react-query';
@@ -42,7 +42,8 @@ export default function ProductDetails() {
             avatar_url,
             business_name,
             location,
-            created_at
+            created_at,
+            is_verified
           )
         `)
         .eq('id', id)
@@ -308,9 +309,17 @@ export default function ProductDetails() {
                     </div>
                   )}
                   <div>
-                    <p className="font-semibold">
+                    <p className="font-semibold flex items-center gap-1.5">
                       {product.vendor?.business_name || product.vendor?.full_name || 'Seller'}
+                      {product.vendor?.is_verified && (
+                        <ShieldCheck className="h-4 w-4 text-primary" />
+                      )}
                     </p>
+                    {product.vendor?.is_verified ? (
+                      <p className="text-xs text-primary font-medium">Verified Vendor</p>
+                    ) : (
+                      <p className="text-xs text-muted-foreground">Not Verified</p>
+                    )}
                     <p className="text-sm text-muted-foreground">
                       Member since {new Date(product.vendor?.created_at || '').getFullYear()}
                     </p>

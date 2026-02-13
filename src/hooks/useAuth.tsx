@@ -13,6 +13,7 @@ interface Profile {
   location: string | null;
   role: 'client' | 'vendor';
   business_name: string | null;
+  is_verified: boolean;
   created_at: string;
   updated_at: string;
 }

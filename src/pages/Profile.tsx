@@ -9,7 +9,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { RWANDA_LOCATIONS } from '@/lib/constants';
 import { toast } from 'sonner';
-import { Loader2, User } from 'lucide-react';
+import { Loader2, User, ShieldCheck, ShieldX } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { VerificationForm } from '@/components/vendor/VerificationForm';
 import {
   Select,
@@ -103,6 +104,21 @@ export default function Profile() {
               )}
             </div>
             <CardTitle>Edit Profile</CardTitle>
+            {profile?.role === 'vendor' && (
+              <div className="flex justify-center">
+                {profile?.is_verified ? (
+                  <Badge className="bg-green-500/20 text-green-400 gap-1">
+                    <ShieldCheck className="h-3.5 w-3.5" />
+                    Verified Vendor
+                  </Badge>
+                ) : (
+                  <Badge variant="outline" className="gap-1 text-muted-foreground">
+                    <ShieldX className="h-3.5 w-3.5" />
+                    Not Verified
+                  </Badge>
+                )}
+              </div>
+            )}
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
