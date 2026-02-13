@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { RWANDA_LOCATIONS } from '@/lib/constants';
 import { toast } from 'sonner';
 import { Loader2, User } from 'lucide-react';
+import { VerificationForm } from '@/components/vendor/VerificationForm';
 import {
   Select,
   SelectContent,
@@ -190,6 +191,12 @@ export default function Profile() {
             </form>
           </CardContent>
         </Card>
+
+        {profile?.role === 'vendor' && (
+          <div className="mt-6">
+            <VerificationForm />
+          </div>
+        )}
       </div>
     </Layout>
   );
